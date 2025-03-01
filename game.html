@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang ="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+  <link rel="stylesheet" href="style.css">
+<style>
+   /* Import font for retro feel */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #191638;
+    background-image: linear-gradient(to bottom, #191638, #2d1b3c);
+    color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 1s;
+    background-size: 10px 10px;
+    background-image: repeating-linear-gradient(45deg, #2a1b4a 0, #2a1b4a 1px, #191638 0, #191638 10px);
+}
+
+.container {
+    max-width: 600px;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 105, 180, 0.5);
+    position: relative;
+    overflow: hidden;
+    border: 4px solid #ff69b4;
+}
+
+.container:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ff69b4, #ff14dd, #ff69b4);
+    animation: glowBorder 2s infinite linear;
+}
+
+@keyframes glowBorder {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+
+h1 {
+   line-height: 1.6;
+   FONT-SIZE:24px;
+    text-align: center;
+    color: #ff69b4;
+    margin-bottom: 18px;
+    margin-left: -120px;
+    font-family: 'Press Start 2P', cursive;
+    letter-spacing: 2px;
+    animation: titlePulse 2s infinite alternate;
+}
+
+@keyframes titlePulse {
+    0% { text-shadow: 2px 2px 8px rgba(255, 105, 180, 0.3), -2px -2px 8px rgba(255, 105, 180, 0.3); }
+    5% { text-shadow: 2px 2px 12px rgba(255, 105, 180, 0.8)};
+}
+
+p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    margin-left: -170px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.puzzle p1 {
+    line-height: 2.0;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.stage {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.stage.active {
+    display: block;
+}
+
+.puzzle {
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin-left: -180px;
+    border: 2px solid #ff69b4;
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+    animation: puzzleGlow 3s infinite alternate;
+}
+
+@keyframes puzzleGlow {
+    0% { box-shadow: 0 0 5px rgba(255, 105, 180, 0.3); }
+    100% { box-shadow: 0 0 15px rgba(255, 105, 180, 0.7); }
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    background-color: #333;
+    border: 2px solid #ff69b4;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #ff14dd;
+    box-shadow: 0 0 10px rgba(255, 20, 221, 0.5);
+    outline: none;
+}
+
+button {
+    background: linear-gradient(to bottom, #ff69b4, #ff14dd);
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    margin-left: -30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: block;
+    margin: 15px auto;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 0 #cc0066, 0 5px 5px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+button:before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #ff80c0, #ff33e0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #cc0066, 0 7px 7px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #cc0066, 0 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+.locks {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.lock {
+    background-color: #333;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none;
+    border: 2px solid #ff69b4;
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.3);
+    color: #ff69b4;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 20px;
+}
+
+.lock:hover {
+    background-color: #444;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+    border-color: #ff14dd;
+}
+
+.riddle {
+    font-style: italic;
+    text-align: center;
+    font-size: 16px;
+    margin: 20px 0;
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    animation: riddlePulse 2s infinite alternate;
+}
+
+.hint {
+    color: #ff80c0;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+.hint:hover {
+    color: #ff14dd;
+    text-decoration: underline;
+    transform: scale(1.05);
+}
+
+.hint-content {
+    display: none;
+    padding: 10px;
+    background-color: #2d2d2d;
+    border-radius: 5px;
+    margin-top: 10px;
+    border-left: 3px solid #ff69b4;
+    animation: fadeIn 0.5s;
+}
+
+.hearts {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.heart {
+    position: absolute;
+    font-size: 24px;
+    animation: float 6s ease-in forwards;
+    color: #ff69b4;
+}
+
+.success-message {
+  line-height: 1.6;
+    color: #03dac6;
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0;
+    display: none;
+    animation: pulse 1s infinite;
+    text-shadow: 0 0 5px rgba(3, 218, 198, 0.5);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.error-message {
+    color: #ff80a0;
+    text-align: center;
+    margin: 10px 0;
+    display: none;
+    animation: shake 0.5s;
+    text-shadow: 0 0 5px rgba(255, 128, 160, 0.5);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.cipher-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.cipher-cell {
+    background-color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #ff69b4;
+    transition: all 0.3s;
+}
+
+.cipher-cell:hover {
+    background-color: #444;
+    transform: scale(1.05);
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: #333;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid #ff69b4;
+}
+
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, #ff69b4, #ff14dd, #ff69b4);
+    background-size: 200% 100%;
+    width: 0%;
+    transition: width 0.5s;
+    animation: progressShimmer 2s linear infinite;
+}
+
+@keyframes progressShimmer {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.level-indicator {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 600px;
+    margin-left: 0px;
+    color: #ff80c0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', cursive;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#current-level {
+    margin-left: 5px;
+    font-size: 14px;
+    color: #ff14dd;
+    font-weight: bold;
+    animation: levelPulse 2s infinite alternate;
+}
+
+@keyframes levelPulse {
+    0% { color: #ff80c0; }
+    100% { color: #ff14dd; }
+}
+
+/* Final message styling */
+#final-message {
+    line-height: 1.5;
+    position: relative;
+    font-size: 16px;
+    font-weight: bold;
+    background: #2d2d2d;
+    padding: 20px;
+    border-radius: 10px;
+    border: 3px solid #ff69b4;
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+    margin: 20px 0;
+    margin-left: -180px;
+    color: #ff80c0;
+    animation: finalMessageGlow 3s infinite alternate;
+}
+
+@keyframes finalMessageGlow {
+    0% { box-shadow: 0 0 5px rgba(255, 105, 180, 0.3); border-color: #ff69b4; }
+    100% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.8); border-color: #ff14dd; }
+}
+
+/* Video container (initially hidden) */
+#video-container {
+    display: none;
+    margin-top: 20px;
+    margin-left: -180px;
+}
+
+#custom-video {
+    width: 100% !important;
+    max-width: 1200px;
+    height: AUTO;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 105, 180, 0.5);
+    border: 3px solid #ff69b4;
+}
+
+/* Button styling */
+#play-video-btn {
+    background: linear-gradient(to bottom, #ff69b4, #d81b60);
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    box-shadow: 0 4px 0 #880e4f, 0 5px 5px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+#play-video-btn:before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+    pointer-events: none;
+}
+
+#play-video-btn:hover {
+    background: linear-gradient(to bottom, #ff80c0, #e91e63);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #880e4f, 0 7px 7px rgba(0, 0, 0, 0.3);
+}
+
+#play-video-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #880e4f, 0 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Floating hearts animation */
+.hearts {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.love-message {
+    font-size: 24px;
+    color: #ff14dd;
+    text-align: center;
+    margin: 20px 0;
+    font-weight: bold;
+    display: none;
+    animation: pulse 1.5s infinite;
+    text-shadow: 0 0 10px rgba(255, 20, 221, 0.5);
+    font-family: 'Press Start 2P', cursive;
+    letter-spacing: 1px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.6; transform: scale(0.95); }
+}
+
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background-color: #f2d74e;
+    opacity: 0;
+    pointer-events: none;
+    animation: confetti-fall 5s ease-in-out forwards;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Redesigned Back Button with Retro Game Style */
+.back-btn {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+    background: linear-gradient(to bottom, #ff80bf, #ff0080);
+    color: white;
+    text-align: center;
+    border-radius: 0;
+    margin: 15px;
+    position: fixed;
+    left: 15px;
+    top: 15px;
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 0 #b30059, 0 5px 5px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 0 #800040;
+    border: 3px solid #fff;
+    outline: 3px solid #ff0080;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.back-btn:before {
+    content: "◀ ";
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+.back-btn:hover {
+    background: linear-gradient(to bottom, #ff99cc, #ff1a8c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #b30059, 0 8px 8px rgba(0, 0, 0, 0.3);
+    animation: pixel-effect 1s infinite;
+}
+
+.back-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #b30059, 0 3px 3px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to bottom, #e60073, #cc0066);
+}
+
+/* Add pixel effect to the button on hover */
+@keyframes pixel-effect {
+    0% { box-shadow: 0 4px 0 #b30059, 0 5px 5px rgba(0, 0, 0, 0.5); }
+    50% { box-shadow: 0 4px 0 #b30059, 0 5px 5px rgba(0, 0, 0, 0.5), 0 0 5px 3px rgba(255, 0, 128, 0.5); }
+    100% { box-shadow: 0 4px 0 #b30059, 0 5px 5px rgba(0, 0, 0, 0.5); }
+}
+
+/* Add neon scan line effect */
+.container:after {
+    content: '';
+    position: absolute;
+    top: -180%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(0deg, transparent 0%, rgba(255, 105, 180, 0.2) 50%, transparent 100%);
+    opacity: 0.1;
+    transform: rotate(45deg);
+    animation: scanline 7s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes scanline {
+    0% { top: -180%; }
+    100% { top: 100%; }
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        flex-direction: column;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .container {
+        max-width: 90%;
+        padding: 20px;
+    }
+
+    h1 {
+        margin-left: 0;
+        font-size: 22px;
+    }
+
+    p {
+        margin-left: 0;
+        font-size: 14px;
+    }
+
+    .puzzle {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    input[type="text"], input[type="password"] {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .locks {
+        flex-direction: flex;
+        align-items: center;
+    }
+
+    .lock {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .riddle, .hint {
+        font-size: 14px;
+    }
+
+    #final-message {
+        font-size: 18px;
+        padding: 20px;
+    }
+
+    .cipher-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+    }
+
+    .level-indicator {
+        font-size: 12px;
+        margin-bottom: -20px;
+    }
+
+    .love-message {
+        font-size: 18px;
+    }
+    
+    #final-message, #video-container, #play-video-btn {
+        margin-left: 0;
+        max-width: 95%;
+    }
+
+    #custom-video {
+        max-width: 100%;
+    }
+
+    #play-video-btn {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .back-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+        left: 10px;
+        top: 10px;
+        margin: 10px;
+    }
+}
+
+/* Additional retro animation effects */
+@keyframes crt-flicker {
+    0% { opacity: 0.95; }
+    2% { opacity: 0.85; }
+    4% { opacity: 0.95; }
+    19% { opacity: 1; }
+    21% { opacity: 0.9; }
+    23% { opacity: 1; }
+    80% { opacity: 1; }
+    83% { opacity: 0.9; }
+    87% { opacity: 1; }
+}
+
+.container {
+    animation: crt-flicker 5s infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #ff69b4, #ff14dd);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #ff80c0, #ff33e0);
+}
+    </style>
+</head>
+<body>
+  
+    <div class="container">
+      <div class="level-indicator">
+        Challenge <span id="current-level">1</span>/6</div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <!-- Stage 1: Password Challenge -->
+        <div id="stage1" class="stage active">
+            <h1>Secret Message🎁</h1>
+            <p>Jonah have a special message for you, but it's locked behind a series of challenges. Can you solve them all to reveal the hidden message?</p>
+            
+            <div class="puzzle">
+                <p1>Challenge 1: Enter the password</p1>
+                <p1>The password is hidden in this clue: <br>
+                <span class="riddle">"The feeling that brings two hearts together, with four letters I am measured."</span></p1>
+                
+                <input type="password" id="password-input" placeholder="Enter password...">
+                <div class="hint" onclick="toggleHint('hint1')">Need a hint?</div>
+                <div id="hint1" class="hint-content">It's the most powerful emotion, often symbolized with a ❤️</div>
+                
+                <div id="password-success" class="success-message">Correct! Password accepted.</div>
+                <div id="password-error" class="error-message">Incorrect password. Try again.</div>
+                
+                <button onclick="checkPassword()">Submit</button>
+            </div>
+        </div>
+
+        <!-- Stage 2: Combination Lock -->
+        <div id="stage2" class="stage">
+            <h1>Lock This!</h1>
+            <p>Well done on solving the first challenge! Now you need to crack the combination.</p>
+            
+            <div class="puzzle">
+                <p1>Challenge 2: Find the correct number sequence</p1>
+                <p1 class="riddle">
+                First: The day we officially sets our love together. <br>
+                Second:The number of letters in love. <br>
+                Third: The day of the month that we sets our love and it also our birth of month. </p1>
+                
+                <div class="locks">
+                    <div class="lock" id="lock1" onclick="rotateLock(1)">0</div>
+                    <div class="lock" id="lock2" onclick="rotateLock(2)">0</div>
+                    <div class="lock" id="lock3" onclick="rotateLock(3)">0</div>
+                </div>
+                
+                <div class="hint" onclick="toggleHint('hint2')">Need a hint?</div>
+                <div id="hint2" class="hint-content">Nah! You know already. I will punch you goks if you don't know this😡 .</div>
+                
+                <div id="lock-success" class="success-message">Correct! Thankyou for cracking it..</div>
+                <div id="lock-error" class="error-message">That's not the right combination. Well then try again.. hmph!</div>
+                
+                <button onclick="checkCombination()">Try Combination</button>
+            </div>
+        </div>
+
+        <div id="stage3" class="stage">
+          <h1>Guess🤔</h1>
+          <p>You're almost there! Now, try to guess my favorite person.</p>
+          
+          <div class="puzzle">
+              <p1>Challenge 3: Who is my favorite person?</p1>
+              
+              <input type="text" id="person-input" placeholder="Enter your guess...">
+              
+              <div class="hint" onclick="toggleHint('hint3')">Need a hint?</div>
+              <div id="hint3" class="hint-content">Think of someone well-known for their kindness, wisdom, or talent, for being handsome and the love of my life.</div>
+              
+              <div id="person-success" class="success-message">Correct! You got it!</div>
+              <div id="person-error" class="error-message">Oops! That's not the right person.</div>
+              
+              <button onclick="checkPerson()">Submit Guess</button>
+          </div>
+      </div>
+      
+
+        <!-- Stage 4: Riddle Challenge -->
+        <div id="stage4" class="stage">
+            <h1>Ride Riddle🗝️</h1>
+            <p>Just one more challenge stands between you and the secret message!</p>
+            
+            <div class="puzzle">
+                <p1>Challenge 4: Solve the riddle</p1>
+                <p1 class="riddle">"It is the first nickname you gave me when we were not together, but you still called me that name."</p1>
+                
+                <input type="text" id="riddle-input" placeholder="Enter your answer...">
+                
+                <div class="hint" onclick="toggleHint('hint4')">Need a hint?</div>
+                <div id="hint4" class="hint-content">It's a singer and a performer in ASAP🙄.</div>
+                
+                <div id="riddle-success" class="success-message">I am not Gary V but congrats for able to answer it!</div>
+                <div id="riddle-error" class="error-message">That's not the answer to the my riddle .</div>
+                
+                <button onclick="checkRiddle()">Solve</button>
+            </div>
+        </div>
+
+        <!-- NEW STAGE: Calculation Challenge -->
+        <div id="stage5" class="stage">
+            <h1>Calculate Me😉</h1>
+            <p>Almost there! Now you need to solve a sequence of calculations.</p>
+            
+            <div class="puzzle">
+                <p1>Challenge 5: Solve this calculation</p1>
+                <p1 class="riddle">12+1+15-20+1 → √9 → ×12 → √36 → ×12 → +128 → -57</p1>
+                
+                <input type="text" id="calculation-input" placeholder="Enter your answer...">
+                
+                <div class="hint" onclick="toggleHint('hint5')">Need a hint?</div>
+                <div id="hint5" class="hint-content">Work through each step one at a time. After each → symbol, apply the operation to the previous result.</div>
+                
+                <div id="calculation-success" class="success-message">Hi Goks Happy MotMot</div>
+                <div id="calculation-error" class="error-message">That's not the correct answer.Boloka oy!</div>
+                <div id="love-message" class="love-message">I LOVE YOU MORE</div>
+                
+                <button onclick="checkCalculation()">Solve</button>
+            </div>
+        </div>
+
+        <!-- Stage 6: Heart Challenge (formerly Stage 5) -->
+        <div id="stage6" class="stage">
+            <h1>The Final Test</h1>
+            <p>One last challenge! You need quick reflexes for this one.</p>
+            
+            <div class="puzzle">
+                <p1>Challenge 6: Click the heart when it turns red!</p1>
+                <p1>The heart below will have a countdown. Click it exactly when it turns to 1 have patience with it. 😂</p1>
+                
+                <div id="color-heart" style="font-size: 100px; text-align: center; cursor: pointer; user-select: none; transition: color 0.3s;">❤️</div>
+                <p id="heart-timer" style="text-align: center;">Get ready...</p>
+                
+                <div id="heart-success" class="success-message">Perfect timing!</div>
+                <div id="heart-error" class="error-message">Too early or too late! Try again.</div>
+                
+                <button id="start-heart-game" onclick="startHeartGame()">Start Challenge</button>
+            </div>
+        </div>
+ <!-- Final Message -->
+ <div id="final-stage" class="stage">
+  <h1>Message Unlocked!</h1>
+  <p>Congratulations! You've solved all the challenges and unlocked the special message:</p>
+  
+  <div id="final-message">
+    You are so special to me! I wanted to create something unique just for you to show how much I care. Thanks for solving all the puzzles - it shows your determination, just one of the many qualities I admire in you. ❤️ Sorry kaayo goks low quality na siya kay g upload need e compress ang size kay wako nako pro.
+  </div>
+  
+  <!-- Video Container -->
+  <div id="video-container">
+      <video id="custom-video" controls autoplay>
+          <source src="speech (3).mp4" type="video/mp4">
+          Your browser does not support the video tag.
+      </video>
+  </div>
+  
+  <div class="hearts" id="hearts-container"></div>
+  
+  <button id="play-video-btn" onclick="playVideo()">Play Special Video</button>
+</div>
+</div>
+<a href="main.html"class="back-btn">BACK</a>
+    <script>
+        // Customize your secret message here
+        const secretMessage = "You are so special to me! I wanted to create something unique just for you to show how much I care. Thanks for solving all the puzzles - it shows your determination, just one of the many qualities I admire in you. ❤️";
+        
+        // Current stage tracker
+        let currentStage = 1;
+        
+        // Set the final message
+        document.getElementById('final-message').innerHTML = secretMessage;
+        
+        // Functions for Stage 1: Password Challenge
+        function checkPassword() {
+            const password = document.getElementById('password-input').value.toLowerCase();
+            const correctPassword = "love";
+            
+            if (password === correctPassword) {
+                document.getElementById('password-success').style.display = 'block';
+                document.getElementById('password-error').style.display = 'none';
+                setTimeout(() => {
+                    advanceStage();
+                }, 1500);
+            } else {
+                document.getElementById('password-error').style.display = 'block';
+                document.getElementById('password-success').style.display = 'none';
+                document.getElementById('password-input').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('password-input').classList.remove('shake');
+                }, 500);
+            }
+        }
+        
+        // Functions for Stage 2: Combination Lock
+        let lockValues = [0, 0, 0];
+        
+        function rotateLock(lockIndex) {
+            const lockElement = document.getElementById(`lock${lockIndex}`);
+            lockValues[lockIndex-1] = (lockValues[lockIndex-1] + 1) % 10;
+            lockElement.textContent = lockValues[lockIndex-1];
+            lockElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                lockElement.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
+        function checkCombination() {
+            // The combination is 4-14-4 (4 letters in "love", Valentine's Day is 14th, 4 seasons)
+            if (lockValues[0] === 1 && lockValues[1] === 4 && lockValues[2] === 3) {
+                document.getElementById('lock-success').style.display = 'block';
+                document.getElementById('lock-error').style.display = 'none';
+                setTimeout(() => {
+                    advanceStage();
+                }, 1500);
+            } else {
+                document.getElementById('lock-error').style.display = 'block';
+                document.getElementById('lock-success').style.display = 'none';
+                
+                const locks = document.querySelectorAll('.lock');
+                locks.forEach(lock => {
+                    lock.classList.add('shake');
+                });
+                setTimeout(() => {
+                    locks.forEach(lock => {
+                        lock.classList.remove('shake');
+                    });
+                }, 500);
+            }
+        }
+        
+       // Functions for Stage 3
+function checkPerson() {
+    const correctAnswer = "Godpray Nahial"; // Change this to your favorite person
+    const userInput = document.getElementById("person-input").value.trim();
+    
+    if (userInput.toLowerCase() === correctAnswer.toLowerCase()) {
+        document.getElementById("person-success").style.display = "block";
+        document.getElementById("person-error").style.display = "none";
+        setTimeout(() => {
+            advanceStage();
+        }, 1500);
+    } else {
+        document.getElementById("person-success").style.display = "none";
+        document.getElementById("person-error").style.display = "block";
+        document.getElementById("person-input").classList.add("shake");
+        setTimeout(() => {
+            document.getElementById("person-input").classList.remove("shake");
+        }, 500);
+    }
+}
+        // Functions for Stage 4: Riddle Challenge
+        function checkRiddle() {
+            const answer = document.getElementById('riddle-input').value.toLowerCase();
+            // Accept multiple variations of the answer
+            const correctAnswers = ["gary v", "gary valenciano"];
+            if (correctAnswers.includes(answer.toLowerCase().trim())) {
+                document.getElementById('riddle-success').style.display = 'block';
+                document.getElementById('riddle-error').style.display = 'none';
+                setTimeout(() => {
+                    advanceStage();
+                }, 1500);
+            } else {
+                document.getElementById('riddle-error').style.display = 'block';
+                document.getElementById('riddle-success').style.display = 'none';
+                document.getElementById('riddle-input').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('riddle-input').classList.remove('shake');
+                }, 500);
+            }
+        }
+        
+        // Functions for Stage 5: Calculation Challenge
+        function checkCalculation() {
+            const answer = document.getElementById('calculation-input').value.trim();
+            const correctAnswer = "143";
+            
+            if (answer === correctAnswer) {
+                document.getElementById('calculation-success').style.display = 'block';
+                document.getElementById('calculation-error').style.display = 'none';
+                document.getElementById('love-message').style.display = 'block';
+                setTimeout(() => {
+                    advanceStage();
+                }, 2500);
+            } else {
+                document.getElementById('calculation-error').style.display = 'block';
+                document.getElementById('calculation-success').style.display = 'none';
+                document.getElementById('love-message').style.display = 'none';
+                document.getElementById('calculation-input').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('calculation-input').classList.remove('shake');
+                }, 500);
+            }
+        }
+        
+        // Functions for Stage 6: Heart Challenge
+        let heartGameActive = false;
+        let heartTurnedRed = false;
+        let heartTimer;
+        
+        function startHeartGame() {
+            if (heartGameActive) return;
+            
+            heartGameActive = true;
+            document.getElementById('heart-success').style.display = 'none';
+            document.getElementById('heart-error').style.display = 'none';
+            document.getElementById('heart-timer').textContent = 'Get ready...';
+            document.getElementById('start-heart-game').disabled = true;
+            
+            const heart = document.getElementById('color-heart');
+            heart.style.color = '#555';
+            
+            // Random time between 2 and 5 seconds
+            const randomTime = Math.floor(Math.random() * 3000) + 2000;
+            
+            // Count down
+            let countdown = 3;
+            const countInterval = setInterval(() => {
+                document.getElementById('heart-timer').textContent = countdown > 0 ? countdown : 'Watch carefully!';
+                countdown--;
+                if (countdown < 0) clearInterval(countInterval);
+            }, 1000);
+            
+            // Set the heart to turn red after random time
+            heartTimer = setTimeout(() => {
+                heart.style.color = '#e91e63';
+                heartTurnedRed = true;
+                
+                // If they don't click within 1 second, it's too late
+                setTimeout(() => {
+                    if (heartTurnedRed) {
+                        heartGameActive = false;
+                        document.getElementById('heart-error').textContent = 'Too slow! Try again.';
+                        document.getElementById('heart-error').style.display = 'block';
+                        document.getElementById('start-heart-game').disabled = false;
+                        heart.style.color = '#555';
+                        heartTurnedRed = false;
+                    }
+                }, 1000);
+            }, randomTime);
+            
+            // Add click handler to the heart
+            heart.onclick = function() {
+                if (!heartGameActive) return;
+                
+                if (heartTurnedRed) {
+                    // Success!
+                    heartGameActive = false;
+                    document.getElementById('heart-success').style.display = 'block';
+                    heart.style.color = '#bb86fc';
+                    heartTurnedRed = false;
+                    setTimeout(() => {
+                        advanceStage();
+                    }, 1500);
+                } else {
+                    // Too early
+                    heartGameActive = false;
+                    document.getElementById('heart-error').textContent = 'Too early! Try again.';
+                    document.getElementById('heart-error').style.display = 'block';
+                    document.getElementById('start-heart-game').disabled = false;
+                    clearTimeout(heartTimer);
+                    heart.style.color = '#555';
+                }
+            };
+        }
+      // Function to show the final stage and animate hearts
+function showFinalStage() {
+    document.getElementById('final-stage').style.display = 'block';
+
+    // Generate floating hearts
+    for (let i = 0; i < 10; i++) {
+        let heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = Math.random() * 2 + 2 + 's';
+        document.getElementById('hearts-container').appendChild(heart);
+
+        // Remove hearts after animation
+        setTimeout(() => {
+            heart.remove();
+        }, 3000);
+    }
+}
+
+// Function to play the video in the final stage
+function playVideo() {
+    const videoContainer = document.getElementById('video-container');
+    const video = document.getElementById('custom-video');
+
+    // Show the video container and hide the button
+    videoContainer.style.display = 'block';
+    document.getElementById('play-video-btn').style.display = 'none';
+
+    // Play the video
+    video.play().catch(e => {
+        console.error("Video playback failed:", e);
+        alert("Please click on the video to play it!");
+    });
+}
+
+// Call showFinalStage() when all challenges are completed
+        
+        // Stage management
+        function advanceStage() {
+            // Hide current stage
+            document.getElementById(`stage${currentStage}`).classList.remove('active');
+            
+            // Update progress
+            currentStage++;
+            document.getElementById('current-level').textContent = Math.min(currentStage, 6);
+            document.getElementById('progress').style.width = `${(currentStage-1) * 16.67}%`; // Adjusted for 6 stages (100/6)
+            
+            // Show next stage
+            if (currentStage <= 6) {
+                document.getElementById(`stage${currentStage}`).classList.add('active');
+            } else {
+                // Final stage with message
+                document.getElementById('final-stage').classList.add('active');
+                document.getElementById('progress').style.width = '100%';
+                
+                // Create heart animation
+                createHearts();
+                
+                // Create confetti
+                createConfetti();
+                
+                // Change background color
+                document.body.style.backgroundColor = '#1a0033';
+            }
+        }
+        
+        // Helper functions
+        function toggleHint(hintId) {
+            const hint = document.getElementById(hintId);
+            hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.classList.add('heart');
+                    heart.innerHTML = '❤️';
+                    
+                    // Random position
+                    const leftPos = Math.random() * 100;
+                    heart.style.left = leftPos + '%';
+                    heart.style.bottom = '0';
+                    
+                    // Random size
+                    const size = Math.random() * 20 + 10;
+                    heart.style.fontSize = size + 'px';
+                    
+                    // Random animation duration
+                    const duration = Math.random() * 3 + 3;
+                    heart.style.animationDuration = duration + 's';
+                    
+                    container.appendChild(heart);
+                    
+                    // Remove after animation ends
+                    setTimeout(() => {
+                        heart.remove();
+                    }, duration * 1000);
+                }, i * 300);
+            }
+        }
+        
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    
+                    // Random position
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    
+                    // Random size
+                    const size = Math.random() * 8 + 5;
+                    confetti.style.width = size + 'px';
+                    confetti.style.height = size + 'px';
+                    
+                    // Random color
+                    const colors = ['#bb86fc', '#03dac6', '#e91e63', '#ffeb3b', '#29b6f6'];
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // Random animation duration
+                    const duration = Math.random() * 3 + 2;
+                    confetti.style.animationDuration = duration + 's';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Remove after animation ends
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, duration * 1000);
+                }, i * 50);
+            }
+        }
+        
+        function resetGame() {
+            currentStage = 1;
+            
+            // Reset UI for all stages
+            document.getElementById('password-input').value = '';
+            document.getElementById('password-success').style.display = 'none';
+            document.getElementById('password-error').style.display = 'none';
+            
+            lockValues = [0, 0, 0];
+            document.getElementById('lock1').textContent = '0';
+            document.getElementById('lock2').textContent = '0';
+            document.getElementById('lock3').textContent = '0';
+            document.getElementById('lock-success').style.display = 'none';
+            document.getElementById('lock-error').style.display = 'none';
+            
+            document.getElementById('cipher-input').value = '';
+            document.getElementById('cipher-success').style.display = 'none';
+            document.getElementById('cipher-error').style.display = 'none';
+            
+            document.getElementById('riddle-input').value = '';
+            document.getElementById('riddle-success').style.display = 'none';
+            document.getElementById('riddle-error').style.display = 'none';
+            
+            document.getElementById('calculation-input').value = '';
+            document.getElementById('calculation-success').style.display = 'none';
+            document.getElementById('calculation-error').style.display = 'none';
+            document.getElementById('love-message').style.display = 'none';
+            
+            document.getElementById('heart-success').style.display = 'none';
+            document.getElementById('heart-error').style.display = 'none';
+            document.getElementById('start-heart-game').disabled = false;
+            document.getElementById('color-heart').style.color = '#555';
+            heartGameActive = false;
+            heartTurnedRed = false;
+            
+            // Hide all hints
+            document.querySelectorAll('.hint-content').forEach(hint => {
+                hint.style.display = 'none';
+            });
+            
+            // Reset stages
+            document.querySelectorAll('.stage').forEach(stage => {
+                stage.classList.remove('active');
+            });
+            document.getElementById('stage1').classList.add('active');
+            
+            // Reset progress
+            document.getElementById('current-level').textContent = '1';
+            document.getElementById('progress').style.width = '0%';
+            
+            // Reset background
+            document.body.style.backgroundColor = '#121212';
+        }
+        
+    </script>
+</body>
+</html>
